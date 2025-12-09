@@ -528,6 +528,21 @@
         font-size: 12px;
       }
       
+      #netDiskSyncBar {
+        margin-top: 12px;
+        padding: 12px;
+      }
+      
+      #netDiskSyncBar input {
+        font-size: 14px;
+        padding: 8px;
+      }
+      
+      #netDiskSyncBar button {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+      
       .note-box {
         min-height: 80px;
         padding: 12px;
@@ -629,7 +644,19 @@
   <button class="btn-warning" onclick="openSyncTool()">📥 同步</button>
   <button class="btn-secondary" onclick="openCloudSync()">☁️ 云同步</button>
   <button class="btn-secondary" onclick="openGitHubSync()">📂 GitHub</button>
+  <button class="btn-success" onclick="toggleNetDiskSync()">🌐 网盘同步</button>
   <button class="btn-primary" onclick="resetFilterMode()" id="resetModeBtn" style="display: none;">🔄 显示全部</button>
+</div>
+
+<div class="filter-bar" id="netDiskSyncBar" style="display: none; margin-top: 16px; padding: 16px; background: #f0f9ff; border-radius: 12px; border: 2px solid #0ea5e9;">
+  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+    <input type="text" id="netDiskUrl" placeholder="粘贴网盘直链，一键恢复进度" class="filter-select" style="flex: 1; min-width: 200px;">
+    <button class="btn-primary" onclick="importFromNetDisk()">📥 一键拉取</button>
+    <button class="btn-secondary" onclick="toggleNetDiskSync()">✕ 关闭</button>
+  </div>
+  <div style="margin-top: 8px; font-size: 12px; color: #64748b;">
+    💡 使用方法：导出进度 → 上传到网盘 → 获取分享链接 → 粘贴到这里 → 一键恢复
+  </div>
 </div>
 
 <div class="filter-bar">
@@ -702,6 +729,70 @@ function openCloudSync() {
 // GitHub同步工具
 function openGitHubSync() {
   window.open('sync-github.html', '_blank', 'width=600,height=800,top=100,left=100');
+}
+
+// 网盘直链同步功能
+function toggleNetDiskSync() {
+  const bar = document.getElementById('netDiskSyncBar');
+  bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+}
+
+function importFromNetDisk() {
+  const url = document.getElementById('netDiskUrl').value.trim();
+  if (!url) {
+    alert('请输入网盘直链');
+    return;
+  }
+  
+  try {
+    // 显示加载状态
+    const button = event.target;
+    const originalText = button.textContent;
+    button.innerHTML = '<div class="loading" style="display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite;"></div> 下载中...';
+    button.disabled = true;
+    
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`下载失败: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        // 验证数据格式
+        if (!data.questionBank || !Array.isArray(data.questionBank)) {
+          throw new Error('无效的数据格式');
+        }
+        
+        // 转换数组为Set（如果需要）
+        if (data.progress) {
+          if (Array.isArray(data.progress.starred)) {
+            data.progress.starred = new Set(data.progress.starred);
+          }
+          if (Array.isArray(data.progress.wrong)) {
+            data.progress.wrong = new Set(data.progress.wrong);
+          }
+        }
+        
+        // 保存数据
+        localStorage.setItem('cpa_app_data', JSON.stringify(data));
+        
+        alert('✅ 进度恢复成功！页面将自动刷新。');
+        location.reload();
+      })
+      .catch(error => {
+        console.error('网盘导入失败:', error);
+        alert('❌ 下载失败：' + error.message + '\n\n请检查链接是否有效，或尝试重新生成分享链接。');
+      })
+      .finally(() => {
+        // 恢复按钮状态
+        button.textContent = originalText;
+        button.disabled = false;
+      });
+  } catch (error) {
+    console.error('网盘导入失败:', error);
+    alert('❌ 操作失败：' + error.message);
+  }
 }
 
 function init() {
