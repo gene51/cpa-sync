@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CPA 刷题助手 Pro v5.1</title>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --success: #4cc9f0;
+      --correct: #4ade80;
+      --incorrect: #f87171;
+      --warning: #facc15;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px;
+      background-color: #f9fbfd;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      min-width: 140px;
+      font-size: 16px;
+      flex: 1;
+      min-height: 48px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 16px;
+      min-height: 48px;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: #e2e8f0; color: var(--dark); }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-warning { background: var(--warning); color: var(--dark); }
+    .btn-reset-current { background: var(--primary); color: white; }
+    .btn-reset-chapter { background: var(--incorrect); color: white; }
+    .btn-star-toggle { background: #8b5cf6; color: white; }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .star-button {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      min-height: auto;
+      font-weight: normal;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .star-button:hover {
+      background-color: rgba(250, 204, 21, 0.15);
+      transform: scale(1.1);
+    }
+    
+    .star-button.starred {
+      color: var(--warning);
+      text-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+    }
+    .question-type-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+    }
+    .type-single { background: #3b82f6; }
+    .type-multiple { background: #8b5cf6; }
+    .type-subjective { background: #ec4899; }
+
+    .question-box {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+    }
+    .question-stem {
+      font-size: 18px;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .option-item {
+      padding: 16px 14px;
+      margin: 12px 0;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 60px;
+    }
+    .option-item::before {
+      content: "";
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .option-item.selected::before {
+      background: var(--primary);
+      border-color: var(--primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+      background-size: 16px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .option-item:hover {
+      background-color: #f1f5f9;
+    }
+    .option-item.selected {
+      border-color: var(--primary);
+      background-color: #eff6ff;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+    .option-item.correct {
+      border-color: var(--correct);
+      background-color: #dcfce7;
+    }
+    .option-item.incorrect {
+      border-color: var(--incorrect);
+      background-color: #fee2e2;
+    }
+    .option-text {
+      flex: 1;
+    }
+
+    .subjective-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      margin: 16px 0;
+      font-family: inherit;
+      resize: vertical;
+      display: none;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .subjective-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .extra-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .note-section {
+      margin-top: 20px;
+    }
+    .note-box {
+      width: 100%;
+      min-height: 100px;
+      padding: 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      margin-top: 8px;
+      outline: none;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .note-box:focus {
+      border-color: var(--primary);
+    }
+
+    .nav-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 16px;
+      margin-top: 16px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .nav-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+    .nav-item {
+      text-align: center;
+      padding: 10px 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      background: #f1f5f9;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-item.current {
+      background: var(--primary);
+      color: white;
+    }
+    .nav-item.wrong {
+      border: 2px solid var(--incorrect);
+    }
+    .nav-item.starred {
+      position: relative;
+    }
+    .nav-item.starred::after {
+      content: "★";
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      font-size: 12px;
+      color: gold;
+    }
+    .nav-item.answered {
+      background-color: #dbeafe;
+      border: 1px solid #93c5fd;
+    }
+    .nav-item.answered.correct {
+      background-color: #dcfce7;
+      border: 1px solid #4ade80;
+    }
+    .nav-item.answered.incorrect {
+      background-color: #fee2e2;
+      border: 1px solid #f87171;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-body textarea,
+    .modal-body input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .calculator {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 999;
+      display: none;
+      width: 340px;
+    }
+    .calculator input {
+      width: 100%;
+      padding: 16px;
+      font-size: 20px;
+      margin-bottom: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.95);
+      color: var(--dark);
+      font-weight: 600;
+      text-align: right;
+    }
+    .calc-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .calc-btn {
+      padding: 16px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      min-height: 56px;
+      transition: all 0.2s;
+      color: var(--dark);
+    }
+    .calc-btn:hover { 
+      background: rgba(255,255,255,1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .calc-btn:active {
+      transform: translateY(0);
+    }
+    .calc-btn:nth-child(4n) {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+    .calc-btn:nth-child(4n):hover {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    }
+    .calc-btn:last-child {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: white;
+    }
+    .calc-btn:last-child:hover {
+      background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+    }
+
+    kbd {
+      background-color: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-family: monospace;
+      margin-left: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 8px;
+      }
+      
+      .question-box {
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .question-stem {
+        font-size: 16px;
+        margin-bottom: 12px;
+      }
+      
+      .option-item {
+        padding: 14px 12px;
+        margin: 8px 0;
+        min-height: 56px;
+      }
+      
+      .option-item::before {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+      }
+      
+      .controls {
+        flex-direction: row;
+        gap: 6px;
+        margin-top: 12px;
+        justify-content: space-between;
+      }
+      
+      .controls button {
+        flex: 1;
+        padding: 12px 8px;
+        font-size: 14px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      
+      .controls button:first-child {
+        font-size: 12px;
+      }
+      
+      .controls button:last-child {
+        font-size: 12px;
+      }
+      
+      .extra-controls {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      
+      .extra-controls button {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+      }
+      
+      .nav-panel {
+        padding: 12px;
+        margin-top: 12px;
+        max-height: 150px;
+      }
+      
+      .nav-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
+      }
+      
+      .nav-item {
+        padding: 8px 4px;
+        font-size: 14px;
+        min-height: 40px;
+      }
+      
+      .filter-bar {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      
+      .filter-select {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+      }
+      
+      .top-bar {
+        flex-direction: column;
+        gap: 8px;
+        margin: 12px 0;
+      }
+      
+      .top-bar button {
+        width: 100%;
+        padding: 8px;
+        font-size: 12px;
+      }
+      
+      .note-box {
+        min-height: 80px;
+        padding: 12px;
+        font-size: 14px;
+      }
+      
+      .subjective-input {
+        min-height: 100px;
+        padding: 12px;
+        font-size: 14px;
+      }
+      
+      .calculator {
+        width: calc(100vw - 32px);
+        bottom: 8px;
+        right: 8px;
+        padding: 12px;
+      }
+      
+      .calc-btn {
+        padding: 10px;
+        font-size: 14px;
+        min-height: 44px;
+      }
+      
+      kbd {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 6px;
+      }
+      
+      .question-box {
+        padding: 10px;
+        border-radius: 8px;
+      }
+      
+      .nav-grid {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+      }
+      
+      .nav-item {
+        font-size: 12px;
+        min-height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+<div class="question-box">
+  <div class="question-meta">
+    <div id="questionPath">📘 请选择题库</div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button id="starButton" onclick="toggleStar()" title="星标/取消 (Ctrl+K)" class="star-button">
+        <span id="starIcon" style="transition: all 0.3s ease;">☆</span>
+      </button>
+      <div id="questionCounter">第 0 题 / 共 0 题</div>
+    </div>
+  </div>
+  <div class="question-type-tag type-single" id="questionTypeTag">【单选题】</div>
+  <div class="question-stem" id="questionStem">请导入题库开始练习</div>
+  
+  <div class="options" id="options"></div>
+  <textarea class="subjective-input" id="subjectiveAnswer" placeholder="请输入你的答案..."></textarea>
+  
+  <div class="controls">
+    <button class="btn-secondary" onclick="prevQuestion()" title="上一题 (← 或 Ctrl+H)">◀ 上一题</button>
+    <button class="btn-primary" onclick="submitAnswer()" title="提交答案 (Enter 或 Ctrl+S)">✅ 提交答案</button>
+    <button class="btn-secondary" onclick="nextQuestion()" title="下一题 (→ 或 Ctrl+L)">下一题 ▶</button>
+  </div>
+
+
+  <div id="feedback" style="margin-top:15px; min-height:24px; font-weight: bold;"></div>
+
+  <div class="note-section">
+    <label>📝 备注：</label>
+    <div class="note-box" id="noteBox" contenteditable="true" oninput="saveNote()"></div>
+  </div>
+</div>
+
+<div class="nav-panel">
+  <div class="nav-title">📌 题库导航（点击跳转）</div>
+  <div class="nav-grid" id="navGrid"></div>
+</div>
+
+<div class="top-bar">
+  <button class="btn-secondary" onclick="importProgress()">📂 导入题库</button>
+  <button class="btn-secondary" onclick="exportProgress()">📤 导出进度</button>
+  <button class="btn-secondary" onclick="toggleCalculator()">🧮 计算器</button>
+  <button class="btn-secondary" onclick="resetCurrentQuestion()" title="本题重做 (Ctrl+R)">🔄 本题重做</button>
+  <button class="btn-secondary" onclick="resetCurrentChapter()" title="本章重做 (Ctrl+Shift+R)">🔁 本章重做</button>
+  <button class="btn-secondary" onclick="showStarred()">⭐ 星标题集</button>
+  <button class="btn-secondary" onclick="showWrong()">❌ 错题集</button>
+  <button class="btn-warning" onclick="openSyncTool()">📥 同步</button>
+  <button class="btn-secondary" onclick="openCloudSync()">☁️ 云同步</button>
+  <button class="btn-secondary" onclick="openGitHubSync()">📂 GitHub</button>
+  <button class="btn-primary" onclick="resetFilterMode()" id="resetModeBtn" style="display: none;">🔄 显示全部</button>
+</div>
+
+<div class="filter-bar">
+  <select class="filter-select" id="subjectFilter" onchange="applyFilters()">
+    <option value="">全部科目</option>
+  </select>
+  <select class="filter-select" id="bookFilter" onchange="applyFilters()">
+    <option value="">全部教材</option>
+  </select>
+  <select class="filter-select" id="chapterFilter" onchange="applyFilters()">
+    <option value="">全部章节</option>
+  </select>
+</div>
+
+<div class="calculator" id="calculator">
+  <input type="text" id="calcInput" placeholder="输入表达式，如 100*1.1^5" />
+  <div class="calc-buttons">
+    <button class="calc-btn" onclick="calcAppend('7')">7</button>
+    <button class="calc-btn" onclick="calcAppend('8')">8</button>
+    <button class="calc-btn" onclick="calcAppend('9')">9</button>
+    <button class="calc-btn" onclick="calcAppend('/')">/</button>
+    <button class="calc-btn" onclick="calcAppend('4')">4</button>
+    <button class="calc-btn" onclick="calcAppend('5')">5</button>
+    <button class="calc-btn" onclick="calcAppend('6')">6</button>
+    <button class="calc-btn" onclick="calcAppend('*')">*</button>
+    <button class="calc-btn" onclick="calcAppend('1')">1</button>
+    <button class="calc-btn" onclick="calcAppend('2')">2</button>
+    <button class="calc-btn" onclick="calcAppend('3')">3</button>
+    <button class="calc-btn" onclick="calcAppend('-')">-</button>
+    <button class="calc-btn" onclick="calcAppend('0')">0</button>
+    <button class="calc-btn" onclick="calcAppend('.')">.</button>
+    <button class="calc-btn" onclick="calcResult()">=</button>
+    <button class="calc-btn" onclick="calcAppend('+')">+</button>
+    <button class="calc-btn" style="grid-column: span 2;" onclick="calcClear()">C</button>
+    <button class="calc-btn" onclick="calcAppend('^')">^</button>
+    <button class="calc-btn" onclick="toggleCalculator()">×</button>
+  </div>
+</div>
+
+<script>
+let appData = {
+  questionBank: [],
+  progress: {
+    current: 0,
+    answers: {},
+    starred: new Set(),
+    wrong: new Set(),
+    notes: {}
+  },
+  filters: {
+    subject: '',
+    book: '',
+    chapter: '',
+    mode: 'all' // 'all', 'starred', 'wrong'
+  },
+  filteredIndices: [],
+  apiKey: localStorage.getItem('cpa_api_key') || ''
+};
+
+// 数据同步工具
+function openSyncTool() {
+  window.open('sync-tool.html', '_blank', 'width=600,height=800,top=100,left=100');
+}
+
+// 云同步工具
+function openCloudSync() {
+  window.open('sync-cloud.html', '_blank', 'width=600,height=800,top=100,left=100');
+}
+
+// GitHub同步工具
+function openGitHubSync() {
+  window.open('sync-github.html', '_blank', 'width=600,height=800,top=100,left=100');
+}
+
+function init() {
+  const saved = localStorage.getItem('cpa_app_data');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      loadAppData(parsed);
+    } catch (e) {
+      console.error('加载失败', e);
+      localStorage.removeItem('cpa_app_data');
+    }
+  } else {
+    document.getElementById('questionStem').innerText = '欢迎使用！请点击【导入题库】开始。';
+  }
+}
+
+function loadAppData(data) {
+  appData.questionBank = (data.questionBank || []).filter(q => q && typeof q === 'object');
+  appData.progress = data.progress || {};
+  appData.progress.starred = new Set(appData.progress.starred || []);
+  appData.progress.wrong = new Set(appData.progress.wrong || []);
+  appData.progress.answers = appData.progress.answers || {};
+  appData.progress.notes = appData.progress.notes || {};
+  appData.progress.current = 0; // 重置为0，确保索引正确
+  if (appData.questionBank.length === 0) return;
+
+  appData.questionBank.forEach((q, i) => {
+    if (!q.id) q.id = 'q' + String(i).padStart(4, '0');
+    if (!q.type) q.type = (q.options && q.options.length > 0) ? 'single' : 'subjective';
+    if (typeof q.answer === 'string' && /^[A-Z]+$/.test(q.answer)) {
+      const indices = q.answer.split('').map(c => c.charCodeAt(0) - 65);
+      q.answer = q.type === 'single' ? indices[0] : indices;
+    }
+    if (!q.subject) q.subject = '未知科目';
+    if (!q.book) q.book = '未知教材';
+    if (!q.chapter) q.chapter = '未知章节';
+  });
+
+  rebuildFilteredIndices();
+  renderFilters();
+  renderQuestion();
+  renderNavPanel();
+  updateNoteBox();
+}
+
+function rebuildFilteredIndices() {
+  appData.filteredIndices = [];
+  appData.questionBank.forEach((q, idx) => {
+    // 基础筛选条件
+    const basicFilter = (!appData.filters.subject || q.subject === appData.filters.subject) &&
+                       (!appData.filters.book || q.book === appData.filters.book) &&
+                       (!appData.filters.chapter || q.chapter === appData.filters.chapter);
+    
+    // 模式筛选条件
+    let modeFilter = true;
+    if (appData.filters.mode === 'starred') {
+      modeFilter = appData.progress.starred.has(q.id);
+    } else if (appData.filters.mode === 'wrong') {
+      modeFilter = appData.progress.wrong.has(q.id);
+    }
+    
+    if (basicFilter && modeFilter) {
+      appData.filteredIndices.push(idx);
+    }
+  });
+
+  if (!appData.filteredIndices.includes(appData.progress.current) && appData.filteredIndices.length > 0) {
+    appData.progress.current = appData.filteredIndices[0];
+  } else if (appData.filteredIndices.length === 0) {
+    appData.progress.current = -1;
+  }
+}
+
+function renderFilters() {
+  const subjects = new Set();
+  const books = new Set();
+
+  appData.questionBank.forEach(q => {
+    subjects.add(q.subject);
+    books.add(q.book);
+  });
+
+  // 渲染科目
+  const subjectSel = document.getElementById('subjectFilter');
+  subjectSel.innerHTML = '<option value="">全部科目</option>';
+  [...subjects].sort().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    subjectSel.appendChild(opt);
+  });
+
+  // 渲染教材
+  const bookSel = document.getElementById('bookFilter');
+  bookSel.innerHTML = '<option value="">全部教材</option>';
+  [...books].sort().forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b;
+    opt.textContent = b;
+    bookSel.appendChild(opt);
+  });
+
+  // ✅ 重点修改：章节只显示当前科目+教材下的章节
+  const chapterSel = document.getElementById('chapterFilter');
+  chapterSel.innerHTML = '<option value="">全部章节</option>';
+
+  const selectedSubject = appData.filters.subject;
+  const selectedBook = appData.filters.book;
+
+  const validChapters = new Set();
+  appData.questionBank.forEach(q => {
+    if (
+      (!selectedSubject || q.subject === selectedSubject) &&
+      (!selectedBook || q.book === selectedBook)
+    ) {
+      validChapters.add(q.chapter);
+    }
+  });
+
+  [...validChapters].sort().forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    chapterSel.appendChild(opt);
+  });
+}
+
+function applyFilters() {
+  appData.filters.subject = document.getElementById('subjectFilter').value;
+  appData.filters.book = document.getElementById('bookFilter').value;
+  appData.filters.chapter = document.getElementById('chapterFilter').value;
+
+  rebuildFilteredIndices();
+  renderQuestion();
+  renderNavPanel();
+  
+  // 更新导航标题
+  updateNavTitle();
+}
+
+function updateNavTitle() {
+  const title = document.querySelector('.nav-title');
+  const resetBtn = document.getElementById('resetModeBtn');
+  
+  if (appData.filters.mode === 'starred') {
+    title.innerText = '⭐ 星标题集（点击跳转）';
+    resetBtn.style.display = 'inline-block';
+  } else if (appData.filters.mode === 'wrong') {
+    title.innerText = '❌ 错题集（点击跳转）';
+    resetBtn.style.display = 'inline-block';
+  } else {
+    title.innerText = '📌 题库导航（点击跳转）';
+    resetBtn.style.display = 'none';
+  }
+}
+
+function resetFilterMode() {
+  appData.filters.mode = 'all';
+  rebuildFilteredIndices();
+  renderQuestion();
+  renderNavPanel();
+  updateNavTitle();
+}
+
+function showSavedAnswerFeedback() {
+  const q = getCurrentQuestion();
+  if (!q || !appData.progress.answers[q.id]) {
+    document.getElementById('feedback').innerText = '';
+    return;
+  }
+
+  const feedback = document.getElementById('feedback');
+  let feedbackHTML = '';
+
+  if (q.type === 'subjective') {
+    feedbackHTML = '✅ 已保存你的答案。';
+    if (q.explanation) {
+      feedbackHTML += `<br><br><strong>📖 解析：</strong><div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 8px;">${q.explanation}</div>`;
+    }
+  } else {
+    const ansKey = Array.isArray(q.answer) ? q.answer.map(String) : [String(q.answer)];
+    const userAns = appData.progress.answers[q.id] || [];
+
+    let isCorrect = false;
+    if (q.type === 'single') {
+      isCorrect = userAns === ansKey[0];
+    } else {
+      isCorrect = userAns.length === ansKey.length && ansKey.every(a => userAns.includes(a));
+    }
+
+    if (isCorrect) {
+      feedbackHTML = '<span style="color:#10b981">✅ 回答正确！</span>';
+    } else {
+      feedbackHTML = `<span style="color:#ef4444">❌ 回答错误。正确答案是：${ansKey.map(i => q.options[i]).join('、')}</span>`;
+    }
+
+    if (q.explanation) {
+      feedbackHTML += `<br><br><strong>📖 解析：</strong><div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 8px;">${q.explanation}</div>`;
+    }
+
+    // 显示正确/错误选项
+    const optionEls = document.querySelectorAll('.option-item');
+    optionEls.forEach(el => {
+      const idx = el.dataset.index;
+      el.classList.remove('correct', 'incorrect');
+      if (ansKey.includes(idx)) {
+        el.classList.add('correct');
+      } else if (Array.isArray(userAns) ? userAns.includes(idx) : userAns === idx) {
+        el.classList.add('incorrect');
+      }
+    });
+  }
+
+  feedback.innerHTML = feedbackHTML;
+}
+
+function renderQuestion() {
+  if (appData.filteredIndices.length === 0) {
+    document.getElementById('questionStem').innerText = '未找到匹配题目';
+    document.getElementById('options').innerHTML = '';
+    document.getElementById('subjectiveAnswer').style.display = 'none';
+    document.getElementById('questionCounter').innerText = '第 0 题 / 共 0 题';
+    return;
+  }
+
+  const qIndex = appData.progress.current;
+  const q = appData.questionBank[qIndex];
+
+  const path = `${q.subject} · ${q.book} · ${q.chapter}`;
+  document.getElementById('questionPath').innerText = `📘 ${path}`;
+  document.getElementById('questionCounter').innerText = 
+    `第 ${appData.filteredIndices.indexOf(qIndex) + 1} 题 / 共 ${appData.filteredIndices.length} 题`;
+
+  const typeTag = document.getElementById('questionTypeTag');
+  if (q.type === 'single') {
+    typeTag.className = 'question-type-tag type-single';
+    typeTag.innerText = '【单选题】';
+  } else if (q.type === 'multiple') {
+    typeTag.className = 'question-type-tag type-multiple';
+    typeTag.innerText = '【多选题】';
+  } else {
+    typeTag.className = 'question-type-tag type-subjective';
+    typeTag.innerText = '【主观题】';
+  }
+
+  document.getElementById('questionStem').innerText = q.stem || '';
+
+  const optionsDiv = document.getElementById('options');
+  const subjectiveInput = document.getElementById('subjectiveAnswer');
+  optionsDiv.innerHTML = '';
+  subjectiveInput.style.display = 'none';
+
+  if (q.type === 'subjective') {
+    subjectiveInput.style.display = 'block';
+    subjectiveInput.value = appData.progress.answers[q.id] || '';
+  } else if (q.options && Array.isArray(q.options)) {
+    subjectiveInput.style.display = 'none';
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'option-item';
+      div.innerHTML = `<span class="option-text">${opt}</span>`;
+      div.dataset.index = i;
+      div.onclick = () => selectOption(i);
+      optionsDiv.appendChild(div);
+    });
+  }
+
+  restoreSelection();
+  updateNoteBox();
+  
+  // 自动显示已回答题目的解析
+  showSavedAnswerFeedback();
+}
+
+function restoreSelection() {
+  const q = getCurrentQuestion();
+  if (!q || q.type === 'subjective') return;
+
+  const userAns = appData.progress.answers[q.id];
+  const optionEls = document.querySelectorAll('.option-item');
+  optionEls.forEach(el => {
+    el.classList.remove('selected', 'correct', 'incorrect');
+  });
+
+  if (q.type === 'single') {
+    if (userAns !== undefined && userAns !== '') {
+      const el = document.querySelector(`.option-item[data-index="${userAns}"]`);
+      if (el) el.classList.add('selected');
+    }
+  } else if (Array.isArray(userAns)) {
+    userAns.forEach(idx => {
+      const el = document.querySelector(`.option-item[data-index="${idx}"]`);
+      if (el) el.classList.add('selected');
+    });
+  }
+}
+
+function getCurrentQuestion() {
+  if (appData.progress.current < 0 || appData.progress.current >= appData.questionBank.length) return null;
+  return appData.questionBank[appData.progress.current];
+}
+
+function selectOption(index) {
+  const q = getCurrentQuestion();
+  if (!q || q.type === 'subjective') return;
+
+  const idxStr = String(index);
+  if (q.type === 'single') {
+    appData.progress.answers[q.id] = idxStr;
+  } else {
+    let current = appData.progress.answers[q.id] || [];
+    if (!Array.isArray(current)) current = [];
+    if (current.includes(idxStr)) {
+      current = current.filter(x => x !== idxStr);
+    } else {
+      current.push(idxStr);
+    }
+    appData.progress.answers[q.id] = current;
+  }
+  saveProgress();
+  restoreSelection();
+}
+
+function submitAnswer() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+
+  if (q.type === 'subjective') {
+    const ans = document.getElementById('subjectiveAnswer').value.trim();
+    appData.progress.answers[q.id] = ans;
+    saveProgress();
+    
+    // 显示主观题解析（如果有）
+    let feedbackHTML = '✅ 已保存你的答案。';
+    if (q.explanation) {
+      feedbackHTML += `<br><br><strong>📖 解析：</strong><div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 8px;">${q.explanation}</div>`;
+    }
+    document.getElementById('feedback').innerHTML = feedbackHTML;
+  } else {
+    const ansKey = Array.isArray(q.answer) ? q.answer.map(String) : [String(q.answer)];
+    const userAns = appData.progress.answers[q.id] || [];
+
+    let isCorrect = false;
+    if (q.type === 'single') {
+      isCorrect = userAns === ansKey[0];
+    } else {
+      isCorrect = userAns.length === ansKey.length && ansKey.every(a => userAns.includes(a));
+    }
+
+    if (!isCorrect) {
+      appData.progress.wrong.add(q.id);
+    } else {
+      appData.progress.wrong.delete(q.id);
+    }
+    saveProgress();
+
+    const feedback = document.getElementById('feedback');
+    
+    // 构建反馈HTML
+    let feedbackHTML = '';
+    if (isCorrect) {
+      feedbackHTML = '<span style="color:#10b981">✅ 回答正确！</span>';
+    } else {
+      feedbackHTML = `<span style="color:#ef4444">❌ 回答错误。正确答案是：${ansKey.map(i => q.options[i]).join('、')}</span>`;
+    }
+    
+    // 添加解析（如果有）
+    if (q.explanation) {
+      feedbackHTML += `<br><br><strong>📖 解析：</strong><div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 8px;">${q.explanation}</div>`;
+    }
+    
+    feedback.innerHTML = feedbackHTML;
+
+    const optionEls = document.querySelectorAll('.option-item');
+    optionEls.forEach(el => {
+      const idx = el.dataset.index;
+      el.classList.remove('correct', 'incorrect');
+      if (ansKey.includes(idx)) {
+        el.classList.add('correct');
+      } else if (Array.isArray(userAns) ? userAns.includes(idx) : userAns === idx) {
+        el.classList.add('incorrect');
+      }
+    });
+  }
+}
+
+function resetCurrentQuestion() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+  delete appData.progress.answers[q.id];
+  appData.progress.wrong.delete(q.id);
+  saveProgress();
+  renderQuestion();
+  renderNavPanel();
+}
+
+function resetCurrentChapter() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+  const chapter = q.chapter;
+  appData.questionBank.forEach((item, idx) => {
+    if (item.chapter === chapter) {
+      delete appData.progress.answers[item.id];
+      appData.progress.wrong.delete(item.id);
+    }
+  });
+  saveProgress();
+  alert(`✅ 已重置"${chapter}"所有题目`);
+  renderQuestion();
+  renderNavPanel();
+}
+
+function toggleStar() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+  
+  const starIcon = document.getElementById('starIcon');
+  
+  // 添加点击动画效果
+  starIcon.style.transform = 'scale(1.2)';
+  setTimeout(() => {
+    starIcon.style.transform = 'scale(1)';
+  }, 150);
+  
+  if (appData.progress.starred.has(q.id)) {
+    appData.progress.starred.delete(q.id);
+  } else {
+    appData.progress.starred.add(q.id);
+  }
+  
+  updateStarButton();
+  renderNavPanel();
+  saveProgress();
+}
+
+function renderNavPanel() {
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  appData.filteredIndices.forEach((origIdx, filteredIdx) => {
+    const q = appData.questionBank[origIdx];
+    const btn = document.createElement('div');
+    btn.className = 'nav-item';
+    
+    // 检查是否已回答
+    if (appData.progress.answers[q.id] !== undefined) {
+      btn.classList.add('answered');
+      
+      // 判断回答是否正确
+      if (q.type !== 'subjective') {
+        const ansKey = Array.isArray(q.answer) ? q.answer.map(String) : [String(q.answer)];
+        const userAns = appData.progress.answers[q.id] || [];
+        
+        let isCorrect = false;
+        if (q.type === 'single') {
+          isCorrect = userAns === ansKey[0];
+        } else {
+          isCorrect = userAns.length === ansKey.length && ansKey.every(a => userAns.includes(a));
+        }
+        
+        if (isCorrect) {
+          btn.classList.add('correct');
+        } else {
+          btn.classList.add('incorrect');
+        }
+      }
+    }
+    
+    if (filteredIdx === appData.progress.current) btn.classList.add('current');
+    if (appData.progress.wrong.has(q.id)) btn.classList.add('wrong');
+    if (appData.progress.starred.has(q.id)) btn.classList.add('starred');
+    
+    btn.innerText = filteredIdx + 1;
+    btn.onclick = () => {
+      appData.progress.current = filteredIdx;
+      renderQuestion();
+      renderNavPanel();
+    };
+    
+    grid.appendChild(btn);
+  });
+  
+  // 确保更新导航标题和按钮状态
+  updateNavTitle();
+}
+
+function nextQuestion() {
+  if (appData.progress.current < appData.filteredIndices.length - 1) {
+    appData.progress.current++;
+    renderQuestion();
+    renderNavPanel();
+  }
+}
+function prevQuestion() {
+  if (appData.progress.current > 0) {
+    appData.progress.current--;
+    renderQuestion();
+    renderNavPanel();
+  }
+}
+function saveNote() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+  const note = document.getElementById('noteBox').innerHTML;
+  appData.progress.notes[q.id] = note;
+  saveProgress();
+}
+
+function saveProgress() {
+  const toSave = {
+    ...appData,
+    progress: {
+      ...appData.progress,
+      starred: [...appData.progress.starred],
+      wrong: [...appData.progress.wrong]
+    }
+  };
+  localStorage.setItem('cpa_app_data', JSON.stringify(toSave));
+}
+
+function exportProgress() {
+  if (!appData.questionBank.length) {
+    alert('还没有题库！');
+    return;
+  }
+  const dataStr = JSON.stringify({
+    version: '5.1',
+    exportedAt: new Date().toISOString(),
+    ...appData
+  }, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cpa_progress.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function importProgress() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const rawData = JSON.parse(ev.target.result);
+        if (!rawData || typeof rawData !== 'object') throw new Error('无效JSON');
+
+        const cleanBank = (rawData.questionBank || []).filter(q => {
+          return q && typeof q === 'object' && (q.stem || q.options || q.answer);
+        });
+
+        if (cleanBank.length === 0) {
+          throw new Error('题库中没有有效题目');
+        }
+
+        const strategy = prompt(
+          '请选择导入策略：\n1 → 清空原题库（全新开始）\n2 → 仅新增题目（保留原有进度）\n\n输入 1 或 2：',
+          '2'
+        );
+
+        if (strategy === '1') {
+          const newData = {
+            questionBank: cleanBank,
+            progress: {
+              current: 0,
+              answers: {},
+              starred: [],
+              wrong: [],
+              notes: {}
+            }
+          };
+          loadAppData(newData);
+          alert(`✅ 已清空原题库，导入 ${cleanBank.length} 题。`);
+        } else if (strategy === '2') {
+          const existingIds = new Set(appData.questionBank.map(q => q.id));
+          const newQuestions = cleanBank.filter(q => !existingIds.has(q.id));
+          appData.questionBank.push(...newQuestions);
+
+          if (appData.progress.current === 0 && appData.questionBank.length > 0) {
+            appData.progress.current = 0;
+          }
+
+          loadAppData(appData);
+          alert(`✅ 新增 ${newQuestions.length} 题（跳过 ${cleanBank.length - newQuestions.length} 重复题）。`);
+        } else {
+          alert('操作已取消。');
+        }
+      } catch (err) {
+        alert('❌ 文件解析失败：\n' + err.message);
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function setApiKey() {
+  const key = prompt('请输入你的 API Key（支持阿里云百炼、OpenRouter 等）：', appData.apiKey || '');
+  if (key !== null) {
+    appData.apiKey = key.trim();
+    localStorage.setItem('cpa_api_key', appData.apiKey);
+    alert('✅ API Key 已保存。');
+  }
+}
+
+async function requestAIExplanation() {
+  const q = getCurrentQuestion();
+  if (!q) {
+    alert('当前无题目');
+    return;
+  }
+  if (!appData.apiKey) {
+    alert('请先在【AI设置】中配置 API Key');
+    return;
+  }
+
+  const userAns = appData.progress.answers[q.id] || '未作答';
+  let ansText = userAns;
+  if (Array.isArray(q.options)) {
+    if (Array.isArray(userAns)) {
+      ansText = userAns.map(i => q.options[i]).join('、');
+    } else if (typeof userAns === 'string') {
+      const idx = parseInt(userAns);
+      ansText = q.options[idx] || userAns;
+    }
+  }
+
+  const prompt = `你是一位资深CPA讲师。请用中文详细解析以下题目：
+
+题目：${q.stem}
+选项：${q.options ? q.options.join('； ') : '（主观题）'}
+用户答案：${ansText}
+标准答案：${Array.isArray(q.answer) ? q.answer.map(i => q.options[i]).join('、') : (typeof q.answer === 'string' ? q.answer : '见参考答案')}
+题型：${q.type === 'single' ? '单选题' : q.type === 'multiple' ? '多选题' : '主观题'}
+
+要求：
+1. 指出考点（科目+章节）
+2. 分析正确选项的理由
+3. 解释错误选项为何不选
+4. 给出记忆技巧或易错提醒
+5. 语言简洁专业，不超过300字`;
+
+  try {
+    const response = await fetch('https://dashscope.cn-beijing.aliyuncs.com/api/v1/services/aigc/text-generation/generation?X-DashScope-Async=disable', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${appData.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "qwen-max",
+        input: { messages: [{ role: "user", content: prompt }] },
+        parameters: { result_format: "message" }
+      })
+    });
+
+    const data = await response.json();
+    if (data.output && data.output.choices && data.output.choices[0]) {
+      const aiText = data.output.choices[0].message.content;
+      alert(`🤖 AI解析结果：\n\n${aiText}`);
+    } else {
+      throw new Error('API 返回格式异常');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('❌ AI 调用失败：\n' + (err.message || '请检查网络或 API Key'));
+  }
+}
+
+function toggleCalculator() {
+  const calc = document.getElementById('calculator');
+  calc.style.display = calc.style.display === 'none' ? 'block' : 'none';
+}
+function calcAppend(val) {
+  const input = document.getElementById('calcInput');
+  if (val === '^') val = '**';
+  input.value += val;
+}
+function calcClear() {
+  document.getElementById('calcInput').value = '';
+}
+function calcResult() {
+  const input = document.getElementById('calcInput');
+  try {
+    let expr = input.value.replace(/\s+/g, '');
+    if (!/^[0-9+\-*/().**]+$/.test(expr)) throw new Error('含非法字符');
+    const result = eval(expr);
+    input.value = result;
+  } catch (e) {
+    input.value = 'Error';
+  }
+}
+
+function updateNoteBox() {
+  const q = getCurrentQuestion();
+  if (!q) return;
+  const note = appData.progress.notes[q.id] || '';
+  document.getElementById('noteBox').innerHTML = note;
+}
+
+function showStarred() {
+  if (appData.progress.starred.size === 0) {
+    alert('暂无星标题目');
+    return;
+  }
+  
+  // 设置为星标模式
+  appData.filters.mode = 'starred';
+  rebuildFilteredIndices();
+  
+  if (appData.filteredIndices.length > 0) {
+    appData.progress.current = appData.filteredIndices[0];
+    renderQuestion();
+    renderNavPanel();
+  } else {
+    alert('当前筛选条件下无星标题目');
+    appData.filters.mode = 'all';
+    rebuildFilteredIndices();
+  }
+}
+
+function showWrong() {
+  if (appData.progress.wrong.size === 0) {
+    alert('暂无错题');
+    return;
+  }
+  
+  // 设置为错题模式
+  appData.filters.mode = 'wrong';
+  rebuildFilteredIndices();
+  
+  if (appData.filteredIndices.length > 0) {
+    appData.progress.current = appData.filteredIndices[0];
+    renderQuestion();
+    renderNavPanel();
+  } else {
+    alert('当前筛选条件下无错题');
+    appData.filters.mode = 'all';
+    rebuildFilteredIndices();
+  }
+}
+
+// 添加键盘快捷键支持
+document.addEventListener('keydown', function(event) {
+  // 如果正在输入文本，不响应快捷键
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.isContentEditable) {
+    return;
+  }
+
+  // Ctrl+Shift+R: 本章重做
+  if (event.ctrlKey && event.shiftKey && event.key === 'R') {
+    event.preventDefault();
+    resetCurrentChapter();
+    return;
+  }
+
+  // Ctrl+R: 本题重做
+  if (event.ctrlKey && event.key === 'r') {
+    event.preventDefault();
+    resetCurrentQuestion();
+    return;
+  }
+
+  // Ctrl+K: 星标/取消
+  if (event.ctrlKey && event.key === 'k') {
+    event.preventDefault();
+    toggleStar();
+    return;
+  }
+
+
+
+  // Ctrl+H: 上一题
+  if (event.ctrlKey && event.key === 'h') {
+    event.preventDefault();
+    prevQuestion();
+    return;
+  }
+
+  // Ctrl+L: 下一题
+  if (event.ctrlKey && event.key === 'l') {
+    event.preventDefault();
+    nextQuestion();
+    return;
+  }
+
+  // Ctrl+S: 提交答案
+  if (event.ctrlKey && event.key === 's') {
+    event.preventDefault();
+    submitAnswer();
+    return;
+  }
+
+  // Enter: 提交答案
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    submitAnswer();
+    return;
+  }
+
+  // 左箭头: 上一题
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    prevQuestion();
+    return;
+  }
+
+  // 右箭头: 下一题
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    nextQuestion();
+    return;
+  }
+
+  // 数字键1-9: 选择选项
+  const num = parseInt(event.key);
+  if (num >= 1 && num <= 9) {
+    const q = getCurrentQuestion();
+    if (q && q.type !== 'subjective' && q.options && num <= q.options.length) {
+      event.preventDefault();
+      selectOption(num - 1);
+    }
+  }
+});
+
+window.onload = init;
+</script>
+
+</body>
+</html>

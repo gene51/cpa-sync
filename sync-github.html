@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPA刷题助手 - GitHub同步</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    
+    .content {
+      padding: 32px 24px;
+    }
+    
+    .section {
+      margin-bottom: 32px;
+    }
+    
+    .section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .btn {
+      padding: 16px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #f8fafc;
+      color: #1e293b;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(248, 113, 113, 0.4);
+    }
+    
+    .info-box {
+      background: #fef3c7;
+      border: 2px solid #fde68a;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .info-box h4 {
+      color: #92400e;
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .info-box p {
+      color: #92400e;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .status-card {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .status-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .status-label {
+      font-weight: 500;
+      color: #64748b;
+    }
+    
+    .status-value {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .status-value.success {
+      color: #22c55e;
+    }
+    
+    .status-value.warning {
+      color: #f59e0b;
+    }
+    
+    .status-value.error {
+      color: #ef4444;
+    }
+    
+    .message {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+      border: 2px solid #bbf7d0;
+      display: block;
+    }
+    
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #fecaca;
+      display: block;
+    }
+    
+    .message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 2px solid #bfdbfe;
+      display: block;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .code-block {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+    
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
+      
+      .container {
+        border-radius: 12px;
+      }
+      
+      .header {
+        padding: 24px 20px;
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .content {
+        padding: 24px 20px;
+      }
+      
+      .btn {
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📂 CPA刷题助手 - GitHub同步</h1>
+      <p>通过GitHub Gist实现的免费云同步方案</p>
+    </div>
+    
+    <div class="content">
+      <!-- 消息提示 -->
+      <div class="message" id="message"></div>
+      
+      <div class="info-box">
+        <h4>🔧 GitHub同步说明</h4>
+        <p>GitHub同步使用GitHub Gist作为免费的云存储服务。这是一个完全免费的方案，但需要GitHub账号，并且同步的数据会公开（建议使用私有Gist）。</p>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">
+          <i class="fa fa-cog"></i>
+          GitHub配置
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">GitHub用户名</label>
+          <input type="text" class="form-input" id="githubUsername" placeholder="请输入您的GitHub用户名">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">GitHub Token (可选，用于私有Gist)</label>
+          <input type="password" class="form-input" id="githubToken" placeholder="请输入GitHub Personal Access Token">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Gist ID (留空将自动创建)</label>
+          <input type="text" class="form-input" id="gistId" placeholder="已有的Gist ID（可选）">
+        </div>
+        
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="saveGitHubConfig()">
+            <i class="fa fa-save"></i>
+            保存配置
+          </button>
+          <button class="btn btn-secondary" onclick="testGitHubConnection()">
+            <i class="fa fa-wifi"></i>
+            测试连接
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">
+          <i class="fa fa-exchange"></i>
+          同步操作
+        </div>
+        
+        <div class="button-group">
+          <button class="btn btn-success" onclick="uploadToGitHub()">
+            <i class="fa fa-cloud-upload"></i>
+            <span id="uploadButtonText">📤 上传到GitHub</span>
+          </button>
+          <button class="btn btn-primary" onclick="downloadFromGitHub()">
+            <i class="fa fa-cloud-download"></i>
+            <span id="downloadButtonText">📥 从GitHub下载</span>
+          </button>
+          <button class="btn btn-secondary" onclick="autoSyncGitHub()">
+            <i class="fa fa-refresh"></i>
+            <span id="autoSyncButtonText">🔄 自动同步</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-title">
+          <i class="fa fa-tachometer"></i>
+          同步状态
+        </div>
+        
+        <div class="status-card">
+          <div class="status-item">
+            <span class="status-label">配置状态:</span>
+            <span class="status-value" id="configStatus">未配置</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Gist状态:</span>
+            <span class="status-value" id="gistStatus">未知</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">上次上传:</span>
+            <span class="status-value" id="lastUpload">从未</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">上次下载:</span>
+            <span class="status-value" id="lastDownload">从未</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">同步状态:</span>
+            <span class="status-value" id="syncStatus">未同步</span>
+          </div>
+        </div>
+        
+        <div class="button-group" style="margin-top: 16px;">
+          <button class="btn btn-secondary" onclick="checkGitHubStatus()">
+            <i class="fa fa-refresh"></i>
+            刷新状态
+          </button>
+          <button class="btn btn-danger" onclick="clearGitHubConfig()">
+            <i class="fa fa-trash"></i>
+            清除配置
+          </button>
+        </div>
+      </div>
+      
+      <div class="info-box">
+        <h4>📖 使用指南</h4>
+        <p><strong>第一步：获取GitHub Token（推荐）</strong><br>
+        1. 登录GitHub → 点击头像 → Settings<br>
+        2. 左侧菜单 → Developer settings → Personal access tokens<br>
+        3. Generate new token → 勾选 "gist" 权限<br>
+        4. 复制生成的Token（只显示一次）</p>
+        
+        <p><strong>第二步：配置同步</strong><br>
+        1. 填写GitHub用户名<br>
+        2. 粘贴GitHub Token（可选，但建议填写）<br>
+        3. 点击"保存配置"和"测试连接"</p>
+        
+        <p><strong>第三步：开始同步</strong><br>
+        • 上传：将本地数据备份到GitHub Gist<br>
+        • 下载：从GitHub Gist恢复数据<br>
+        • 自动同步：智能合并本地和云端数据</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let githubConfig = null;
+    let githubSyncRecord = null;
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      loadGitHubConfig();
+      checkGitHubStatus();
+      checkDataStatus();
+    });
+
+    /**
+     * 加载GitHub配置
+     */
+    function loadGitHubConfig() {
+      try {
+        const config = JSON.parse(localStorage.getItem('cpa_github_config') || '{}');
+        if (config.username) {
+          document.getElementById('githubUsername').value = config.username;
+          document.getElementById('githubToken').value = config.token || '';
+          document.getElementById('gistId').value = config.gistId || '';
+          
+          githubConfig = config;
+          
+          document.getElementById('configStatus').textContent = '已配置';
+          document.getElementById('configStatus').className = 'status-value success';
+        }
+        
+        // 加载同步记录
+        githubSyncRecord = JSON.parse(localStorage.getItem('cpa_github_sync_record') || '{}');
+      } catch (error) {
+        console.error('加载GitHub配置失败:', error);
+      }
+    }
+
+    /**
+     * 保存GitHub配置
+     */
+    function saveGitHubConfig() {
+      try {
+        const username = document.getElementById('githubUsername').value.trim();
+        const token = document.getElementById('githubToken').value.trim();
+        const gistId = document.getElementById('gistId').value.trim();
+        
+        if (!username) {
+          showMessage('请输入GitHub用户名', 'error');
+          return;
+        }
+        
+        const config = {
+          username: username,
+          token: token,
+          gistId: gistId
+        };
+        
+        localStorage.setItem('cpa_github_config', JSON.stringify(config));
+        githubConfig = config;
+        
+        showMessage('✅ GitHub配置保存成功', 'success');
+        document.getElementById('configStatus').textContent = '已配置';
+        document.getElementById('configStatus').className = 'status-value success';
+        
+      } catch (error) {
+        console.error('保存GitHub配置失败:', error);
+        showMessage('❌ 保存配置失败: ' + error.message, 'error');
+      }
+    }
+
+    /**
+     * 测试GitHub连接
+     */
+    async function testGitHubConnection() {
+      try {
+        if (!githubConfig) {
+          showMessage('请先保存配置', 'error');
+          return;
+        }
+        
+        const headers = {
+          'Accept': 'application/vnd.github.v3+json'
+        };
+        
+        if (githubConfig.token) {
+          headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+        
+        const response = await fetch(`https://api.github.com/users/${githubConfig.username}`, {
+          method: 'GET',
+          headers: headers
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          showMessage(`✅ 连接成功！欢迎，${userData.name || userData.login}`, 'success');
+          
+          // 如果配置了Gist ID，检查Gist是否存在
+          if (githubConfig.gistId) {
+            try {
+              const gistResponse = await fetch(`https://api.github.com/gists/${githubConfig.gistId}`, {
+                headers: headers
+              });
+              
+              if (gistResponse.ok) {
+                document.getElementById('gistStatus').textContent = '已找到';
+                document.getElementById('gistStatus').className = 'status-value success';
+              } else {
+                document.getElementById('gistStatus').textContent = '未找到';
+                document.getElementById('gistStatus').className = 'status-value warning';
+              }
+            } catch (error) {
+              console.error('检查Gist失败:', error);
+            }
+          }
+          
+        } else {
+          throw new Error(`GitHub API错误: ${response.status}`);
+        }
+        
+      } catch (error) {
+        console.error('测试连接失败:', error);
+        showMessage('❌ 连接失败: ' + error.message, 'error');
+      }
+    }
+
+    /**
+     * 上传数据到GitHub Gist
+     */
+    async function uploadToGitHub() {
+      try {
+        if (!githubConfig) {
+          showMessage('请先完成GitHub配置', 'error');
+          return;
+        }
+        
+        // 显示加载状态
+        const originalText = document.getElementById('uploadButtonText').textContent;
+        document.getElementById('uploadButtonText').innerHTML = '<div class="loading"></div>上传中...';
+        
+        // 获取本地数据
+        const appData = JSON.parse(localStorage.getItem('cpa_app_data') || '{}');
+        
+        if (!appData.questionBank || appData.questionBank.length === 0) {
+          showMessage('没有可上传的数据', 'error');
+          document.getElementById('uploadButtonText').textContent = originalText;
+          return;
+        }
+        
+        // 转换Set为数组以便JSON序列化
+        const uploadData = JSON.parse(JSON.stringify(appData));
+        if (uploadData.progress) {
+          if (uploadData.progress.starred) {
+            uploadData.progress.starred = Array.from(uploadData.progress.starred);
+          }
+          if (uploadData.progress.wrong) {
+            uploadData.progress.wrong = Array.from(uploadData.progress.wrong);
+          }
+        }
+        
+        // 添加同步信息
+        uploadData.syncInfo = {
+          version: '1.0',
+          timestamp: new Date().toISOString(),
+          source: 'cpa-quiz-app',
+          syncType: 'github'
+        };
+        
+        const dataStr = JSON.stringify(uploadData, null, 2);
+        
+        // GitHub API配置
+        const headers = {
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        };
+        
+        if (githubConfig.token) {
+          headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+        
+        let response;
+        
+        if (githubConfig.gistId) {
+          // 更新现有Gist
+          response = await fetch(`https://api.github.com/gists/${githubConfig.gistId}`, {
+            method: 'PATCH',
+            headers: headers,
+            body: JSON.stringify({
+              files: {
+                'cpa-quiz-data.json': {
+                  content: dataStr
+                }
+              }
+            })
+          });
+        } else {
+          // 创建新Gist
+          response = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+              description: 'CPA刷题助手学习数据备份',
+              public: !githubConfig.token, // 如果没有token，只能创建公开Gist
+              files: {
+                'cpa-quiz-data.json': {
+                  content: dataStr
+                }
+              }
+            })
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API错误: ${response.status}`);
+        }
+        
+        const gistData = await response.json();
+        
+        // 保存Gist ID
+        if (!githubConfig.gistId) {
+          githubConfig.gistId = gistData.id;
+          localStorage.setItem('cpa_github_config', JSON.stringify(githubConfig));
+          document.getElementById('gistId').value = gistData.id;
+        }
+        
+        // 更新同步记录
+        githubSyncRecord = {
+          lastUpload: new Date().toLocaleString(),
+          lastDownload: githubSyncRecord?.lastDownload || '从未',
+          gistId: gistData.id,
+          gistUrl: gistData.html_url,
+          syncStatus: 'synced'
+        };
+        
+        localStorage.setItem('cpa_github_sync_record', JSON.stringify(githubSyncRecord));
+        
+        showMessage(`✅ 成功上传 ${appData.questionBank.length} 道题目到GitHub Gist`, 'success');
+        checkGitHubStatus();
+        
+      } catch (error) {
+        console.error('上传到GitHub失败:', error);
+        let errorMsg = '❌ 上传失败: ';
+        
+        if (error.message.includes('401')) {
+          errorMsg += 'GitHub Token无效或权限不足';
+        } else if (error.message.includes('403')) {
+          errorMsg += 'API速率限制，请稍后再试';
+        } else if (error.message.includes('404')) {
+          errorMsg += 'Gist不存在或无权访问';
+        } else {
+          errorMsg += error.message;
+        }
+        
+        showMessage(errorMsg, 'error');
+        
+      } finally {
+        // 恢复按钮状态
+        document.getElementById('uploadButtonText').textContent = '📤 上传到GitHub';
+      }
+    }
+
+    /**
+     * 从GitHub Gist下载数据
+     */
+    async function downloadFromGitHub() {
+      try {
+        if (!githubConfig || !githubConfig.gistId) {
+          showMessage('请先完成GitHub配置并上传数据', 'error');
+          return;
+        }
+        
+        // 显示加载状态
+        const originalText = document.getElementById('downloadButtonText').textContent;
+        document.getElementById('downloadButtonText').innerHTML = '<div class="loading"></div>下载中...';
+        
+        // GitHub API配置
+        const headers = {
+          'Accept': 'application/vnd.github.v3+json'
+        };
+        
+        if (githubConfig.token) {
+          headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+        
+        const response = await fetch(`https://api.github.com/gists/${githubConfig.gistId}`, {
+          method: 'GET',
+          headers: headers
+        });
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API错误: ${response.status}`);
+        }
+        
+        const gistData = await response.json();
+        const fileContent = gistData.files['cpa-quiz-data.json']?.content;
+        
+        if (!fileContent) {
+          throw new Error('Gist中没有找到cpa-quiz-data.json文件');
+        }
+        
+        const cloudData = JSON.parse(fileContent);
+        
+        // 验证数据格式
+        if (!cloudData.questionBank || !Array.isArray(cloudData.questionBank)) {
+          throw new Error('GitHub中的数据格式无效');
+        }
+        
+        // 转换数组回Set
+        if (cloudData.progress) {
+          if (Array.isArray(cloudData.progress.starred)) {
+            cloudData.progress.starred = new Set(cloudData.progress.starred);
+          }
+          if (Array.isArray(cloudData.progress.wrong)) {
+            cloudData.progress.wrong = new Set(cloudData.progress.wrong);
+          }
+        }
+        
+        // 保存到本地存储
+        localStorage.setItem('cpa_app_data', JSON.stringify(cloudData));
+        
+        // 更新同步记录
+        githubSyncRecord.lastDownload = new Date().toLocaleString();
+        githubSyncRecord.syncStatus = 'synced';
+        localStorage.setItem('cpa_github_sync_record', JSON.stringify(githubSyncRecord));
+        
+        showMessage(`✅ 成功从GitHub下载 ${cloudData.questionBank.length} 道题目`, 'success');
+        checkGitHubStatus();
+        checkDataStatus();
+        
+        // 提示用户刷新页面
+        setTimeout(() => {
+          if (confirm('数据下载成功！是否现在打开CPA刷题助手？')) {
+            window.location.href = 'index.html';
+          }
+        }, 1500);
+        
+      } catch (error) {
+        console.error('从GitHub下载失败:', error);
+        let errorMsg = '❌ 下载失败: ';
+        
+        if (error.message.includes('401')) {
+          errorMsg += 'GitHub Token无效或权限不足';
+        } else if (error.message.includes('403')) {
+          errorMsg += 'API速率限制，请稍后再试';
+        } else if (error.message.includes('404')) {
+          errorMsg += 'Gist不存在或无权访问';
+        } else {
+          errorMsg += error.message;
+        }
+        
+        showMessage(errorMsg, 'error');
+        
+      } finally {
+        // 恢复按钮状态
+        document.getElementById('downloadButtonText').textContent = '📥 从GitHub下载';
+      }
+    }
+
+    /**
+     * 自动同步GitHub数据
+     */
+    async function autoSyncGitHub() {
+      try {
+        if (!githubConfig) {
+          showMessage('请先完成GitHub配置', 'error');
+          return;
+        }
+        
+        // 显示加载状态
+        const originalText = document.getElementById('autoSyncButtonText').textContent;
+        document.getElementById('autoSyncButtonText').innerHTML = '<div class="loading"></div>同步中...';
+        
+        // 获取本地数据
+        const localData = JSON.parse(localStorage.getItem('cpa_app_data') || '{}');
+        
+        if (githubConfig.gistId) {
+          try {
+            // 尝试从GitHub获取数据
+            const headers = {
+              'Accept': 'application/vnd.github.v3+json'
+            };
+            
+            if (githubConfig.token) {
+              headers['Authorization'] = `token ${githubConfig.token}`;
+            }
+            
+            const response = await fetch(`https://api.github.com/gists/${githubConfig.gistId}`, {
+              headers: headers
+            });
+            
+            if (response.ok) {
+              const gistData = await response.json();
+              const fileContent = gistData.files['cpa-quiz-data.json']?.content;
+              
+              if (fileContent) {
+                const cloudData = JSON.parse(fileContent);
+                
+                // 转换数组回Set
+                if (cloudData.progress) {
+                  if (Array.isArray(cloudData.progress.starred)) {
+                    cloudData.progress.starred = new Set(cloudData.progress.starred);
+                  }
+                  if (Array.isArray(cloudData.progress.wrong)) {
+                    cloudData.progress.wrong = new Set(cloudData.progress.wrong);
+                  }
+                }
+                
+                if (!localData.questionBank || localData.questionBank.length === 0) {
+                  // 本地没有数据，直接使用GitHub数据
+                  localStorage.setItem('cpa_app_data', JSON.stringify(cloudData));
+                  showMessage(`✅ 已从GitHub恢复 ${cloudData.questionBank.length} 道题目`, 'success');
+                } else {
+                  // 合并数据
+                  const mergedData = mergeData(localData, cloudData);
+                  localStorage.setItem('cpa_app_data', JSON.stringify(mergedData));
+                  
+                  // 上传合并后的数据回GitHub
+                  await uploadToGitHub();
+                  showMessage('✅ 数据已智能合并并同步到GitHub', 'success');
+                }
+                
+                // 更新同步记录
+                githubSyncRecord.lastDownload = new Date().toLocaleString();
+                githubSyncRecord.syncStatus = 'synced';
+                localStorage.setItem('cpa_github_sync_record', JSON.stringify(githubSyncRecord));
+              } else {
+                // GitHub上没有数据文件，上传本地数据
+                if (localData.questionBank && localData.questionBank.length > 0) {
+                  await uploadToGitHub();
+                  showMessage('✅ GitHub上没有数据，已上传本地数据', 'success');
+                } else {
+                  showMessage('❌ 本地和GitHub都没有数据', 'error');
+                }
+              }
+            } else {
+              throw new Error(`GitHub API错误: ${response.status}`);
+            }
+            
+          } catch (error) {
+            if (error.message.includes('404')) {
+              // Gist不存在，创建新的
+              if (localData.questionBank && localData.questionBank.length > 0) {
+                await uploadToGitHub();
+                showMessage('✅ GitHub上没有找到数据，已创建新的Gist', 'success');
+              } else {
+                showMessage('❌ 本地和GitHub都没有数据', 'error');
+              }
+            } else {
+              throw error;
+            }
+          }
+        } else {
+          // 没有Gist ID，直接上传
+          if (localData.questionBank && localData.questionBank.length > 0) {
+            await uploadToGitHub();
+            showMessage('✅ 首次同步，已上传数据到GitHub', 'success');
+          } else {
+            showMessage('❌ 没有可同步的数据', 'error');
+          }
+        }
+        
+        checkGitHubStatus();
+        checkDataStatus();
+        
+      } catch (error) {
+        console.error('自动同步失败:', error);
+        showMessage('❌ 自动同步失败: ' + error.message, 'error');
+        
+      } finally {
+        // 恢复按钮状态
+        document.getElementById('autoSyncButtonText').textContent = '🔄 自动同步';
+      }
+    }
+
+    /**
+     * 合并数据
+     */
+    function mergeData(localData, cloudData) {
+      const merged = JSON.parse(JSON.stringify(localData));
+      
+      // 合并进度数据
+      if (!merged.progress) merged.progress = {};
+      if (!merged.progress.answers) merged.progress.answers = {};
+      if (!merged.progress.starred) merged.progress.starred = new Set();
+      if (!merged.progress.wrong) merged.progress.wrong = new Set();
+      if (!merged.progress.notes) merged.progress.notes = {};
+      
+      // 合并答案
+      if (cloudData.progress?.answers) {
+        Object.keys(cloudData.progress.answers).forEach(key => {
+          const localAnswer = merged.progress.answers[key];
+          const cloudAnswer = cloudData.progress.answers[key];
+          
+          // 如果本地没有，或者云端的更新时间更晚，使用云端数据
+          if (!localAnswer || new Date(cloudAnswer.timestamp) > new Date(localAnswer.timestamp)) {
+            merged.progress.answers[key] = cloudAnswer;
+          }
+        });
+      }
+      
+      // 合并星标
+      if (cloudData.progress?.starred) {
+        cloudData.progress.starred.forEach(qid => merged.progress.starred.add(qid));
+      }
+      
+      // 合并错题
+      if (cloudData.progress?.wrong) {
+        cloudData.progress.wrong.forEach(qid => merged.progress.wrong.add(qid));
+      }
+      
+      // 合并笔记
+      if (cloudData.progress?.notes) {
+        Object.keys(cloudData.progress.notes).forEach(key => {
+          const localNote = merged.progress.notes[key];
+          const cloudNote = cloudData.progress.notes[key];
+          
+          if (!localNote || new Date(cloudNote.timestamp) > new Date(localNote.timestamp)) {
+            merged.progress.notes[key] = cloudNote;
+          }
+        });
+      }
+      
+      return merged;
+    }
+
+    /**
+     * 检查GitHub状态
+     */
+    async function checkGitHubStatus() {
+      try {
+        if (githubSyncRecord) {
+          document.getElementById('lastUpload').textContent = githubSyncRecord.lastUpload || '从未';
+          document.getElementById('lastDownload').textContent = githubSyncRecord.lastDownload || '从未';
+          
+          if (githubSyncRecord.syncStatus === 'synced') {
+            document.getElementById('syncStatus').textContent = '已同步';
+            document.getElementById('syncStatus').className = 'status-value success';
+          } else {
+            document.getElementById('syncStatus').textContent = '未同步';
+            document.getElementById('syncStatus').className = 'status-value warning';
+          }
+        }
+        
+        if (githubConfig && githubConfig.gistId) {
+          document.getElementById('gistStatus').textContent = '已配置';
+          document.getElementById('gistStatus').className = 'status-value success';
+          
+          // 尝试检查Gist是否存在
+          try {
+            const headers = {
+              'Accept': 'application/vnd.github.v3+json'
+            };
+            
+            if (githubConfig.token) {
+              headers['Authorization'] = `token ${githubConfig.token}`;
+            }
+            
+            const response = await fetch(`https://api.github.com/gists/${githubConfig.gistId}`, {
+              headers: headers
+            });
+            
+            if (response.ok) {
+              document.getElementById('gistStatus').textContent = '正常';
+            } else {
+              document.getElementById('gistStatus').textContent = '无法访问';
+              document.getElementById('gistStatus').className = 'status-value error';
+            }
+          } catch (error) {
+            // 忽略错误
+          }
+        } else {
+          document.getElementById('gistStatus').textContent = '未配置';
+          document.getElementById('gistStatus').className = 'status-value warning';
+        }
+        
+      } catch (error) {
+        console.error('检查GitHub状态失败:', error);
+      }
+    }
+
+    /**
+     * 检查本地数据状态
+     */
+    function checkDataStatus() {
+      try {
+        const appData = JSON.parse(localStorage.getItem('cpa_app_data') || '{}');
+        
+        if (appData.questionBank && appData.questionBank.length > 0) {
+          // 数据状态已在其他同步页面显示，这里可以添加额外的状态显示
+        }
+      } catch (error) {
+        console.error('检查数据状态失败:', error);
+      }
+    }
+
+    /**
+     * 清除GitHub配置
+     */
+    function clearGitHubConfig() {
+      if (confirm('确定要清除GitHub配置吗？这不会删除GitHub上的数据。')) {
+        localStorage.removeItem('cpa_github_config');
+        localStorage.removeItem('cpa_github_sync_record');
+        
+        githubConfig = null;
+        githubSyncRecord = null;
+        
+        // 清空输入框
+        document.getElementById('githubUsername').value = '';
+        document.getElementById('githubToken').value = '';
+        document.getElementById('gistId').value = '';
+        
+        showMessage('✅ GitHub配置已清除', 'success');
+        
+        // 重置状态显示
+        document.getElementById('configStatus').textContent = '未配置';
+        document.getElementById('configStatus').className = 'status-value warning';
+        document.getElementById('gistStatus').textContent = '未知';
+        document.getElementById('gistStatus').className = 'status-value warning';
+        document.getElementById('lastUpload').textContent = '从未';
+        document.getElementById('lastDownload').textContent = '从未';
+        document.getElementById('syncStatus').textContent = '未同步';
+        document.getElementById('syncStatus').className = 'status-value warning';
+      }
+    }
+
+    /**
+     * 显示消息
+     */
+    function showMessage(text, type = 'info') {
+      const message = document.getElementById('message');
+      message.textContent = text;
+      message.className = `message ${type}`;
+      
+      // 3秒后自动隐藏
+      if (type !== 'error') {
+        setTimeout(() => {
+          message.style.display = 'none';
+        }, 3000);
+      }
+    }
+  </script>
+</body>
+</html>
